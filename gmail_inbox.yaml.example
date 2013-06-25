@@ -1,0 +1,7 @@
+server: 'imap.gmail.com'
+username: 'YOUR USERNAME'
+password: 'YOUR PASSWORD' 
+mailbox: 'INBOX'
+monitor: 'UNSEEN'
+trash: '[Gmail]/Trash'
+pubkey: 'YOUR PUBKEY ID'
