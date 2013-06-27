@@ -4,7 +4,7 @@ IMAP Encrypt
 Utilizing IMAP IDLE monitor a given mailbox and encrypt all unencrypted email.
 Special thanks to the authors of imaplib2.py and gpg.py (modified)
 """
-import imaplib2, os, sys, email, gpg, yaml
+import imaplib2, os, sys, email, time, gpg, yaml
 from util import Util
 from threading import *
 
@@ -98,28 +98,29 @@ class Idler:
         self.M.append(move_to, read, date, Util.flattenMessage(encrypted_mail))
 
  
-try:
+if __name__ == '__main__':
     config = yaml.load(open(sys.argv[1], 'r'))
-    
-    # Login
-    M = imaplib2.IMAP4_SSL(config['server'])
-    M.login(config['username'], config['password'])
-    M.select(config['mailbox'])
-    
-    # Start the Idler thread
-    idler = Idler(M, config)
-    idler.start()
-    
-    q = ''
-    while not q == 'q':
-      q = raw_input('Type \'q\' followed by [ENTER] to quit: ')
 
-finally:
+    while True:
+        # Login
+        M = imaplib2.IMAP4_SSL(config['server'])
 
-    # Clean up.
-    idler.stop()
-    idler.join()
-    M.close()
-    
-    # This is important!
-    M.logout()
+        try:
+            M.login(config['username'], config['password'])
+            M.select(config['mailbox'])
+
+            # Start the Idler thread
+            idler = Idler(M, config)
+            idler.start()
+            idler.join()
+
+        except:
+           pass
+
+        finally:
+            # Clean up.
+            M.logout()
+            idler.stop()
+
+            # Wait...
+            time.sleep(5)
